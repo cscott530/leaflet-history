@@ -10,12 +10,18 @@
     });
     L.HistoryControl = L.Control.extend({
         map: null,
-        _$backButton: null,
-        _$forwardButton: null,
+        _backButton: null,
+        _forwardButton: null,
         options: {
             position: 'topright',
             maxHistorySize: 10, //set to 0 for unlimited
-            maxFutureSize: 10   //set to 0 for unlimited
+            maxFutureSize: 10,   //set to 0 for unlimited
+            backImage: 'fa fa-caret-left',
+            backText: '',
+            backTooltip: 'Go to Previous Extent',
+            forwardImage: 'fa fa-caret-right',
+            forwardText: '',
+            forwardTooltip: 'Go to Next Extent'
         },
         initialize: function(options) {
             L.Util.setOptions(this, options);
@@ -30,19 +36,13 @@
 
             //TODO make icon configurable
             var container = L.DomUtil.create('div', 'history-control btn-group');
-            var back = L.DomUtil.create('a', 'history-back-button btn btn-default', container);
-            this._$backButton = $(back).click(function() {
-                _this._invokeBackOrForward('historyback', _this.state.history, _this.state.future);
-                return false;
-            }).attr('disabled', true);
-            L.DomUtil.create('i', 'fa fa-caret-left', back);
-            var forward = L.DomUtil.create('a', 'history-forward-button btn btn-default', container);
-            this._$forwardButton = $(forward).click(function() {
-                _this._invokeBackOrForward('historyforward', _this.state.future, _this.state.history);
-                return false;
-            }).attr('disabled', true);
-            L.DomUtil.create('i', 'fa fa-caret-right', forward);
-
+            this._backButton = this._createButton('back', container, function() {
+                this._invokeBackOrForward('historyback', _this.state.history, _this.state.future);
+            }, this);
+            this._forwardButton = this._createButton('forward', container, function() {
+                this._invokeBackOrForward('historyforward', _this.state.future, _this.state.history);
+            }, this);
+            this._updateDisabled();
             this._addMapListeners();
 
             return container;
@@ -60,6 +60,35 @@
                 items: [],
                 maxSize: 0
             }
+        },
+        _createButton: function (name, container, action, _this) {
+            var text = this.options[name + 'Text'] || '';
+            var imageClass = this.options[name + 'Image'] || '';
+            var tooltip = this.options[name + 'Tooltip'] || '';
+            var button = L.DomUtil.create('a', 'history-' + name + '-button btn btn-default', container);
+            var innerHtml = '';
+            if(imageClass) {
+                innerHtml = '<i class="' + imageClass + '"></i> ';
+            }
+            button.innerHTML = innerHtml + text;
+            button.href = '#';
+            button.title = tooltip;
+
+            var stop = L.DomEvent.stopPropagation;
+
+            L.DomEvent
+                .on(button, 'click', stop)
+                .on(button, 'mousedown', stop)
+                .on(button, 'dblclick', stop)
+                .on(button, 'click', L.DomEvent.preventDefault)
+                .on(button, 'click', action, _this)
+                .on(button, 'click', this._refocusOnMap, _this);
+
+            return button;
+        },
+        _updateDisabled: function () {
+            $(this._backButton).attr('disabled', (this.state.history.items.length === 0));
+            $(this._forwardButton).attr('disabled', (this.state.future.items.length === 0));
         },
         _pop: function(stack) {
             stack = stack.items;
@@ -126,8 +155,7 @@
                     _this._push(_this.state.history, _this._buildZoomCenterObjectFromCurrent(e.target));
                 }
 
-                _this._$backButton.attr('disabled', _this.state.history.items.length === 0);
-                _this._$forwardButton.attr('disabled', _this.state.future.items.length === 0);
+                _this._updateDisabled();
             });
         }
     });
