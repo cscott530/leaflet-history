@@ -1,0 +1,9 @@
+{
+    "name": "jigsaw-web-ui",
+    "version": "0.1.0-SNAPSHOT",
+    "dependencies": {
+        "leaflet-dist": "~0.7.0",
+        "font-awesome": "~4.0.3",
+        "bootstrap": "~3.0.0"
+    }
+}
