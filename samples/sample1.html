@@ -12,19 +12,25 @@
 </body>
 <script type="text/javascript" src="../bower_components/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../bower_components/leaflet-dist/leaflet.js"></script>
+<script type="text/javascript" src="../bower_components/leaflet-dist/leaflet-src.js"></script>
 <script type="text/javascript" src="../src/leaflet-history.js"></script>
 
 <script type="text/javascript">
     var map = L.map('map').setView([51.505, -0.09], 13);
 
+    //TODO for now this is ESRI because it actually loads, but should probably switch back before publishing demo.
+    L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Sources: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2013',
+        maxZoom: 16,
+        minZoom: 1}).addTo(map);
+
     // add an OpenStreetMap tile layer
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+//    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+//        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+//    }).addTo(map);
 
     map.addControl(new L.HistoryControl({
-        maxHistorySize: 3
+        maxHistorySize: 1
     }));
 </script>
 
