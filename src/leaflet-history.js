@@ -19,38 +19,53 @@
             backImage: 'fa fa-caret-left',
             backText: '',
             backTooltip: 'Go to Previous Extent',
+            backImageBeforeText: true,
             forwardImage: 'fa fa-caret-right',
             forwardText: '',
-            forwardTooltip: 'Go to Next Extent'
+            forwardTooltip: 'Go to Next Extent',
+            forwardImageBeforeText: false
         },
         initialize: function(options) {
             L.Util.setOptions(this, options);
 
-            this.state.history.maxSize = this.options.maxHistorySize;
-            this.state.future.maxSize = this.options.maxFutureSize;
+            this._state.history.maxSize = this.options.maxHistorySize;
+            this._state.future.maxSize = this.options.maxFutureSize;
         },
         onAdd: function(map) {
             var _this = this;
             this.map = map;
 
-
-            //TODO make icon configurable
-            var container = L.DomUtil.create('div', 'history-control btn-group');
-            this._backButton = this._createButton('back', container, function() {
-                this._invokeBackOrForward('historyback', _this.state.history, _this.state.future);
-            }, this);
-            this._forwardButton = this._createButton('forward', container, function() {
-                this._invokeBackOrForward('historyforward', _this.state.future, _this.state.history);
-            }, this);
+            var container = L.DomUtil.create('div', 'history-control btn-group leaflet-control');
+            this._backButton = this._createButton('back', container, this.goBack, this);
+            this._forwardButton = this._createButton('forward', container, this.goForward, this);
             this._updateDisabled();
             this._addMapListeners();
 
             return container;
         },
         onRemove: function(map) {
-
+            map.off('movestart');
         },
-        state: {
+        performActionWithoutTriggerEvent: function(action) {
+            var ignoring = this._state.ignoringEvents;
+            this._state.ignoringEvents = true;
+            if($.isFunction(action)) {
+                action();
+            }
+            this._state.ignoringEvents = ignoring;
+        },
+        moveWithoutTriggerEvent: function(map, zoomCenter) {
+            this.performActionWithoutTriggerEvent(function() {
+                map.setView(zoomCenter.centerPoint, zoomCenter.zoom);
+            });
+        },
+        goBack: function() {
+            this._invokeBackOrForward('historyback', this._state.history, this._state.future);
+        },
+        goForward: function() {
+            this._invokeBackOrForward('historyforward', this._state.future, this._state.history);
+        },
+        _state: {
             ignoringEvents: false,
             history: {
                 items: [],
@@ -66,11 +81,16 @@
             var imageClass = this.options[name + 'Image'] || '';
             var tooltip = this.options[name + 'Tooltip'] || '';
             var button = L.DomUtil.create('a', 'history-' + name + '-button btn btn-default', container);
-            var innerHtml = '';
             if(imageClass) {
-                innerHtml = '<i class="' + imageClass + '"></i> ';
+                var imageElement = '<i class="' + imageClass + '"></i>';
+                if(this.options[name + 'ImageBeforeText']) {
+                    text = imageElement + ' ' + text;
+                }
+                else {
+                    text += ' ' + imageElement;
+                }
             }
-            button.innerHTML = innerHtml + text;
+            button.innerHTML = text;
             button.href = '#';
             button.title = tooltip;
 
@@ -87,8 +107,8 @@
             return button;
         },
         _updateDisabled: function () {
-            $(this._backButton).attr('disabled', (this.state.history.items.length === 0));
-            $(this._forwardButton).attr('disabled', (this.state.future.items.length === 0));
+            $(this._backButton).attr('disabled', (this._state.history.items.length === 0));
+            $(this._forwardButton).attr('disabled', (this._state.future.items.length === 0));
         },
         _pop: function(stack) {
             stack = stack.items;
@@ -123,7 +143,7 @@
                 //save where we currently are in the 'other' stack
                 var current = this._buildZoomCenterObjectFromCurrent(this.map);
                 this._push(stackToPushCurrent, current);
-                this._moveWithoutTriggerEvent(this.map, previous);
+                this.moveWithoutTriggerEvent(this.map, previous);
 
                 return {
                     previousLocation: previous,
@@ -134,25 +154,12 @@
         _buildZoomCenterObjectFromCurrent:function(map) {
             return new L.ZoomCenter(map.getZoom(), map.getCenter());
         },
-        _performActionWithoutTriggerEvent: function(action) {
-            var ignoring = this.state.ignoringEvents;
-            this.state.ignoringEvents = true;
-            if($.isFunction(action)) {
-                action();
-            }
-            this.state.ignoringEvents = ignoring;
-        },
-        _moveWithoutTriggerEvent: function(map, zoomCenter) {
-            this._performActionWithoutTriggerEvent(function() {
-                map.setView(zoomCenter.centerPoint, zoomCenter.zoom);
-            });
-        },
         _addMapListeners: function() {
             var _this = this;
             this.map.on('movestart', function(e) {
-                if(!_this.state.ignoringEvents) {
-                    _this.state.future.items = [];
-                    _this._push(_this.state.history, _this._buildZoomCenterObjectFromCurrent(e.target));
+                if(!_this._state.ignoringEvents) {
+                    _this._state.future.items = [];
+                    _this._push(_this._state.history, _this._buildZoomCenterObjectFromCurrent(e.target));
                 }
 
                 _this._updateDisabled();

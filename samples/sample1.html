@@ -29,8 +29,12 @@
 //        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 //    }).addTo(map);
 
-    map.addControl(new L.HistoryControl({
-    }));
+    var history = new L.HistoryControl({
+        backText: 'Back',
+        forwardText: 'Forward'
+    });
+    map.addControl(history);
+
 </script>
 
 </html>
