@@ -4,6 +4,6 @@
     "dependencies": {
         "leaflet-dist": "~0.7.0",
         "font-awesome": "~4.0.3",
-        "bootstrap": "~3.0.0"
+        "less": "1.5.0"
     }
 }

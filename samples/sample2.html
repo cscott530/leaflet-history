@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Leaflet History - Basic</title>
+    <title>Leaflet History - Custom Controls</title>
     <link rel="stylesheet" type="text/css" href="../bower_components/leaflet-dist/leaflet.css">
     <link rel="stylesheet" type="text/css" href="../bower_components/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="sample.css">
     <link rel="stylesheet/less" type="text/css" href="../src/leaflet-history.less">
 </head>
 <body>
+    <a href="#" id="custom-back">Back</a>
+    <a href="#" id="custom-forward">Forward</a>
     <div id="map"></div>
 </body>
 <script type="text/javascript" src="../bower_components/jquery/jquery.min.js"></script>
@@ -18,12 +20,30 @@
 <script type="text/javascript">
     var map = L.map('map').setView([51.505, -0.09], 13);
 
+    var $customBack = $('#custom-back').click(function(){ history.goBack(); return false; });
+    var $customForward = $('#custom-forward').click(function(){ history.goForward(); return false; });
+
+    map.on('historybackenabled', function() {
+        $customBack.show();
+    });
+    map.on('historybackdisabled', function() {
+        $customBack.hide();
+    });
+    map.on('historyforwardenabled', function() {
+        $customForward.show();
+    });
+    map.on('historyforwarddisabled', function() {
+        $customForward.hide();
+    });
+
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    var history = new L.HistoryControl().addTo(map);
-//    map.addControl(history);
+    var history = new L.HistoryControl({
+        useExternalControls: true
+    });
+    map.addControl(history);
 
 </script>
 

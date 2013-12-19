@@ -9,13 +9,11 @@
         }
     });
     L.HistoryControl = L.Control.extend({
-        map: null,
-        _backButton: null,
-        _forwardButton: null,
         options: {
             position: 'topright',
             maxHistorySize: 10, //set to 0 for unlimited
-            maxFutureSize: 10,   //set to 0 for unlimited
+            maxFutureSize: 0,
+            useExternalControls: false, //set to true to hide buttons on map and use your own. Can still use goBack, goForward, and allow this to take care of storing history.
             backImage: 'fa fa-caret-left',
             backText: '',
             backTooltip: 'Go to Previous Extent',
@@ -23,7 +21,9 @@
             forwardImage: 'fa fa-caret-right',
             forwardText: '',
             forwardTooltip: 'Go to Next Extent',
-            forwardImageBeforeText: false
+            forwardImageBeforeText: false,
+            orientation: 'horizontal',
+            shouldSaveMoveInHistory: function(zoomCenter) { return true; }
         },
         initialize: function(options) {
             L.Util.setOptions(this, options);
@@ -32,12 +32,13 @@
             this._state.future.maxSize = this.options.maxFutureSize;
         },
         onAdd: function(map) {
-            var _this = this;
-            this.map = map;
+            this._map = map;
 
-            var container = L.DomUtil.create('div', 'history-control btn-group leaflet-control');
-            this._backButton = this._createButton('back', container, this.goBack, this);
-            this._forwardButton = this._createButton('forward', container, this.goForward, this);
+            var container = L.DomUtil.create('div', 'history-control leaflet-bar leaflet-control ' + this.options.orientation);
+            if(!this.options.useExternalControls) {
+                this._backButton = this._createButton('back', container, this.goBack, this);
+                this._forwardButton = this._createButton('forward', container, this.goForward, this);
+            }
             this._updateDisabled();
             this._addMapListeners();
 
@@ -46,7 +47,7 @@
         onRemove: function(map) {
             map.off('movestart');
         },
-        performActionWithoutTriggerEvent: function(action) {
+        performActionWithoutTriggeringEvent: function(action) {
             var ignoring = this._state.ignoringEvents;
             this._state.ignoringEvents = true;
             if($.isFunction(action)) {
@@ -54,18 +55,32 @@
             }
             this._state.ignoringEvents = ignoring;
         },
-        moveWithoutTriggerEvent: function(map, zoomCenter) {
-            this.performActionWithoutTriggerEvent(function() {
-                map.setView(zoomCenter.centerPoint, zoomCenter.zoom);
+        moveWithoutTriggeringEvent: function(zoomCenter) {
+            var _this = this;
+            this.performActionWithoutTriggeringEvent(function() {
+                _this._map.setView(zoomCenter.centerPoint, zoomCenter.zoom);
             });
         },
         goBack: function() {
-            this._invokeBackOrForward('historyback', this._state.history, this._state.future);
+            return this._invokeBackOrForward('historyback', this._state.history, this._state.future);
         },
         goForward: function() {
-            this._invokeBackOrForward('historyforward', this._state.future, this._state.history);
+            return this._invokeBackOrForward('historyforward', this._state.future, this._state.history);
         },
+        clearHistory: function() {
+            this._state.history.items = [];
+            this._updateDisabled();
+        },
+        clearFuture: function() {
+            this._state.future.items = [];
+            this._updateDisabled();
+        },
+        _map: null,
+        _backButton: null,
+        _forwardButton: null,
         _state: {
+            backDisabled: null,
+            forwardDisabled: null,
             ignoringEvents: false,
             history: {
                 items: [],
@@ -80,7 +95,7 @@
             var text = this.options[name + 'Text'] || '';
             var imageClass = this.options[name + 'Image'] || '';
             var tooltip = this.options[name + 'Tooltip'] || '';
-            var button = L.DomUtil.create('a', 'history-' + name + '-button btn btn-default', container);
+            var button = L.DomUtil.create('a', 'history-' + name + '-button', container);
             if(imageClass) {
                 var imageElement = '<i class="' + imageClass + '"></i>';
                 if(this.options[name + 'ImageBeforeText']) {
@@ -107,8 +122,32 @@
             return button;
         },
         _updateDisabled: function () {
-            $(this._backButton).attr('disabled', (this._state.history.items.length === 0));
-            $(this._forwardButton).attr('disabled', (this._state.future.items.length === 0));
+            var backDisabled = (this._state.history.items.length === 0);
+            var forwardDisabled = (this._state.future.items.length === 0);
+            if(backDisabled !== this._state.backDisabled) {
+                console.log('back disabled: ' + backDisabled + ', currently: ' + this._state.backDisabled);
+                this._state.backDisabled = backDisabled;
+                map.fire('historyback' + (backDisabled ? 'disabled' : 'enabled'));
+            }
+            if(forwardDisabled !== this._state.forwardDisabled) {
+                console.log('forward disabled: ' + forwardDisabled + ', currently: ' + this._state.forwardDisabled);
+                this._state.forwardDisabled = forwardDisabled;
+                map.fire('historyforward' + (backDisabled ? 'disabled' : 'enabled'));
+            }
+            if(!this.options.useExternalControls) {
+                this._setButtonDisabled(this._backButton, backDisabled);
+                this._setButtonDisabled(this._forwardButton, forwardDisabled);
+            }
+        },
+        _setButtonDisabled: function(button, condition) {
+            var $button = $(button);
+            var className = 'leaflet-disabled';
+            if(condition) {
+                $button.addClass(className);
+            }
+            else {
+                $button.removeClass(className);
+            }
         },
         _pop: function(stack) {
             stack = stack.items;
@@ -138,16 +177,16 @@
         _popStackAndUseLocation : function(stackToPop, stackToPushCurrent) {
             //check if we can pop
             if($.isArray(stackToPop.items) && stackToPop.items.length > 0) {
+                var current = this._buildZoomCenterObjectFromCurrent(this._map);
                 //get most recent
                 var previous =  this._pop(stackToPop);
                 //save where we currently are in the 'other' stack
-                var current = this._buildZoomCenterObjectFromCurrent(this.map);
                 this._push(stackToPushCurrent, current);
-                this.moveWithoutTriggerEvent(this.map, previous);
+                this.moveWithoutTriggeringEvent(previous);
 
                 return {
                     previousLocation: previous,
-                    newLocation: current
+                    currentLocation: current
                 };
             }
         },
@@ -156,10 +195,13 @@
         },
         _addMapListeners: function() {
             var _this = this;
-            this.map.on('movestart', function(e) {
+            this._map.on('movestart', function(e) {
                 if(!_this._state.ignoringEvents) {
-                    _this._state.future.items = [];
-                    _this._push(_this._state.history, _this._buildZoomCenterObjectFromCurrent(e.target));
+                    var current = _this._buildZoomCenterObjectFromCurrent(e.target);
+                    if(_this.options.shouldSaveMoveInHistory(current)) {
+                        _this._state.future.items = [];
+                        _this._push(_this._state.history, current);
+                    }
                 }
 
                 _this._updateDisabled();

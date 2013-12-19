@@ -1,0 +1,29 @@
+@border-radius: 4px;
+.history-control.leaflet-bar {
+  &.hidden {
+    display: none;
+  }
+
+  &.horizontal {
+    a {
+      display: inline-block;
+      border-bottom: none;
+      border-radius: 0;
+      border-right: 1px solid #ccc;
+      &:first-child {
+        border-top-left-radius: @border-radius;
+        border-bottom-left-radius: @border-radius;
+      }
+      &:last-child {
+        border-top-right-radius: @border-radius;
+        border-bottom-right-radius: @border-radius;
+        border-right: none;
+      }
+    }
+  }
+  a {
+    width: auto;
+    font-size: 1.1em;
+    min-width: 26px;
+  }
+}
