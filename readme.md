@@ -40,7 +40,7 @@ When you call `new L.HistoryControl()`, you may pass in an options object to ext
 * **backTooltip**, **forwardTooltip** - tooltip contents. defaults are `'Go to Previous Extent'` and `'Go to Next Extent'`, respectively.
 * **backImageBeforeText**, **forwardImageBeforeText** - when both text and image are present, whether to show the image first or the text first (left to right). defaults are `true` and `false`, respectively.
 * **orientation** - `'vertical'` | `'horizontal'`(default) - whether to position the buttons on top of one another or side-by-side.
-* **useExternalControls** - `true` | `false`(default) - set to true to hide these controls on the map and instead use your own controls. See the [Events](#Events) and API for more details on this.
+* **useExternalControls** - `true` | `false`(default) - set to true to hide these controls on the map and instead use your own controls. See the [Events](#events) and API for more details on this.
 * **shouldSaveMoveInHistory** - `function(zoomCenter) { return true; }` a callback you can provide that gets called with every move. return `false` to not save a move.
   * useful if you have certain situations where you move the map programmatically and don't want the user to be able to go back.
 
