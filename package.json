@@ -1,18 +1,14 @@
 {
-    "name": "leaflet-history",
-    "version": "0.1.0",
-    "devDependencies": {
-        "grunt": "~0.4.1",
-        "grunt-cli": "~0.1.11",
-        "grunt-contrib-uglify": "",
-        "grunt-contrib-jshint": "",
-        "grunt-contrib-watch": "",
-        "grunt-contrib-concat": ""
-    },
-    "engines": {
-        "node": ">=0.10.0"
-    },
-    "scripts": {
-        "test": "grunt test"
-    }
+  "name": "leaflet-history",
+  "version": "0.1.0",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.11",
+    "grunt-contrib-uglify": "~0.3.2",
+    "grunt-contrib-less": "~0.9.0",
+    "grunt-contrib-clean": "~0.5.0"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  }
 }

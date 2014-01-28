@@ -1,5 +1,6 @@
 {
     "name": "leaflet-history",
+    "title": "Leaflet History",
     "version": "0.1.0",
     "main" : ["dist/*"],
     "ignore" : [ "samples/", "bower_components"],
@@ -8,6 +9,6 @@
         "font-awesome": "~4.0.3"
     },
     "devDependencies" : {
-        "less": "1.5.0"
+        "jquery": "1.10.2"
     }
 }
