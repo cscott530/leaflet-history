@@ -8,20 +8,32 @@
     <link rel="stylesheet" type="text/css" href="../dist/leaflet-history.css">
 </head>
 <body>
-    <a href="#" id="custom-back">Back</a>
-    <a href="#" id="custom-forward">Forward</a>
+    <div style="height: 50px; text-align: center;">
+        <a style="position: absolute; left: 0;" href="#" id="custom-back">Back</a>
+        <a style="position: absolute; left: 50px;" href="#" id="custom-forward">Forward</a>
+        <span>Custom Back/Forward buttons are hidden until a move is made.</span>
+    </div>
     <div id="map"></div>
 </body>
 <script type="text/javascript" src="../bower_components/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="../bower_components/leaflet-dist/leaflet-src.js"></script>
-<script type="text/javascript" src="../src/leaflet-history.js"></script>
+<script type="text/javascript" src="../dist/leaflet-history.js"></script>
 
 <script type="text/javascript">
     var map = L.map('map').setView([51.505, -0.09], 13);
 
-    var $customBack = $('#custom-back').click(function(){ history.goBack(); return false; });
-    var $customForward = $('#custom-forward').click(function(){ history.goForward(); return false; });
+    var $customBack = $('#custom-back').click(function(){
+        //invoke the back manually, has all the same functionality as clicking the standard buttons.
+        history.goBack();
+        return false;
+    });
+    var $customForward = $('#custom-forward').click(function(){
+        //invoke the forward manually, has all the same functionality as clicking the standard buttons.
+        history.goForward();
+        return false;
+    });
 
+    //these events can be used to manage your own external buttons
     map.on('historybackenabled', function() {
         $customBack.show();
     });

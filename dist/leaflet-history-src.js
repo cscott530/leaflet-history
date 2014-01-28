@@ -1,18 +1,8 @@
-/**
- * Created by cscott530 on 12/8/13.
- */
-(function (window, document) {
-    L.ZoomCenter = L.Class.extend({
-        initialize: function(zoom, centerPoint) {
-            this.zoom = zoom;
-            this.centerPoint = centerPoint;
-        }
-    });
+(function () {
     L.HistoryControl = L.Control.extend({
         options: {
             position: 'topright',
-            maxHistorySize: 10, //set to 0 for unlimited
-            maxFutureSize: 0,
+            maxMovesToSave: 10, //set to 0 for unlimited
             useExternalControls: false, //set to true to hide buttons on map and use your own. Can still use goBack, goForward, and allow this to take care of storing history.
             backImage: 'fa fa-caret-left',
             backText: '',
@@ -23,13 +13,12 @@
             forwardTooltip: 'Go to Next Extent',
             forwardImageBeforeText: false,
             orientation: 'horizontal',
-            shouldSaveMoveInHistory: function(zoomCenter) { return true; }
+            shouldSaveMoveInHistory: function(zoomCenter) { return true; } //by default save everything
         },
         initialize: function(options) {
             L.Util.setOptions(this, options);
 
-            this._state.history.maxSize = this.options.maxHistorySize;
-            this._state.future.maxSize = this.options.maxFutureSize;
+            this._state.maxMovesToSave = this.options.maxMovesToSave;
         },
         onAdd: function(map) {
             this._map = map;
@@ -82,13 +71,12 @@
             backDisabled: null,
             forwardDisabled: null,
             ignoringEvents: false,
+            maxMovesToSave: 0,
             history: {
-                items: [],
-                maxSize: 0
+                items: []
             },
             future: {
-                items: [],
-                maxSize: 0
+                items: []
             }
         },
         _createButton: function (name, container, action, _this) {
@@ -125,14 +113,12 @@
             var backDisabled = (this._state.history.items.length === 0);
             var forwardDisabled = (this._state.future.items.length === 0);
             if(backDisabled !== this._state.backDisabled) {
-                console.log('back disabled: ' + backDisabled + ', currently: ' + this._state.backDisabled);
                 this._state.backDisabled = backDisabled;
                 map.fire('historyback' + (backDisabled ? 'disabled' : 'enabled'));
             }
             if(forwardDisabled !== this._state.forwardDisabled) {
-                console.log('forward disabled: ' + forwardDisabled + ', currently: ' + this._state.forwardDisabled);
                 this._state.forwardDisabled = forwardDisabled;
-                map.fire('historyforward' + (backDisabled ? 'disabled' : 'enabled'));
+                map.fire('historyforward' + (forwardDisabled ? 'disabled' : 'enabled'));
             }
             if(!this.options.useExternalControls) {
                 this._setButtonDisabled(this._backButton, backDisabled);
@@ -157,7 +143,7 @@
             return undefined;
         },
         _push: function(stack, value) {
-            var maxLength = stack.maxSize;
+            var maxLength = this._state.maxMovesToSave;
             stack = stack.items;
             if($.isArray(stack)) {
                 stack.push(value);
@@ -208,4 +194,11 @@
             });
         }
     });
-}(this, document));
+}());(function () {
+    L.ZoomCenter = L.Class.extend({
+        initialize: function(zoom, centerPoint) {
+            this.zoom = zoom;
+            this.centerPoint = centerPoint;
+        }
+    });
+}());

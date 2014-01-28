@@ -17,9 +17,11 @@ Usage
 --
 Import leaflet-history.js and leaflet-history.css in your page.
 ```html
-<link rel="stylesheet" type="text/css" href="leaflet-history.less">
-<script type="text/javascript" src="leaflet-history.js"></script>
+<link rel="stylesheet" type="text/css" href="dist/leaflet-history.less">
+<script type="text/javascript" src="dist/leaflet-history.js"></script>
 ```
+Note that the non-minified versions are also availble in `dist/`
+
 After creating your leaflet map, create and add the controller:
 
 ```javascript
@@ -31,9 +33,7 @@ Options
 When you call `new L.HistoryControl()`, you may pass in an options object to extend its functionality. These options are:
 
 * **position** - sets which corner of the map to place your controls. possible values are  `'topleft'` | `'topright'`(default) | `'bottomleft'` | `'bottomright'`
-* **maxHistorySize** - the number of moves in the history to save before clearing out the oldest. default value is `10`, use `0` or a negative number to make unlimited.
-* **maxFutureSize** - the number of "future" moves to save when navigating back. default value is `0` (unlimited).
-  * if this value is less than `maxHistorySize`, you won't be able to return to the most recent state!
+* **maxMovesToSave** - the number of moves in the history to save before clearing out the oldest. default value is `10`, use `0` or a negative number to make unlimited.
 * **backImage**, **forwardImage** - the class used for the button images. defaults are `'fa fa-caret-left'` and `'fa fa-caret-right'`, respectively.
   * no image will be displayed if set to empty string.
 * **backText**, **forwardText** - the text in the buttons. defaults are `''` (empty).
