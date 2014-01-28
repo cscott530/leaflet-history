@@ -17,7 +17,7 @@ Usage
 --
 Import leaflet-history.js and leaflet-history.css in your page.
 ```html
-<link rel="stylesheet" type="text/css" href="dist/leaflet-history.less">
+<link rel="stylesheet" type="text/css" href="dist/leaflet-history.css">
 <script type="text/javascript" src="dist/leaflet-history.js"></script>
 ```
 Note that the non-minified versions are also availble in `dist/`
