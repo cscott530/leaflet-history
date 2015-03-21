@@ -114,11 +114,11 @@
             var forwardDisabled = (this._state.future.items.length === 0);
             if(backDisabled !== this._state.backDisabled) {
                 this._state.backDisabled = backDisabled;
-                map.fire('historyback' + (backDisabled ? 'disabled' : 'enabled'));
+                this._map.fire('historyback' + (backDisabled ? 'disabled' : 'enabled'));
             }
             if(forwardDisabled !== this._state.forwardDisabled) {
                 this._state.forwardDisabled = forwardDisabled;
-                map.fire('historyforward' + (forwardDisabled ? 'disabled' : 'enabled'));
+                this._map.fire('historyforward' + (forwardDisabled ? 'disabled' : 'enabled'));
             }
             if(!this.options.useExternalControls) {
                 this._setButtonDisabled(this._backButton, backDisabled);
@@ -155,7 +155,7 @@
         _invokeBackOrForward: function(eventName, stackToPop, stackToPushCurrent) {
             var response = this._popStackAndUseLocation(stackToPop, stackToPushCurrent);
             if(response) {
-                map.fire(eventName, response);
+                this._map.fire(eventName, response);
                 return true;
             }
             return false;
