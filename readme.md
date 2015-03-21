@@ -7,11 +7,12 @@ By default, it is a simple pair of buttons -- back and forward. However, it can 
 
 Demo
 --
-TODO
+Still need to setup the github pages for this repo, but for now, see the two samples in `samples/`
 
 Installation
 --
-TODO
+Leaflet-History is available through bower. You can do:
+`bower install leaflet-history`
 
 Usage
 --
@@ -78,7 +79,7 @@ For example, if you want to recenter your map after loading some data, but don't
 ```javascript
 var history = new L.HistoryControl().addTo(map);
 //callbacks to get map data
-history.moveWithoutTriggerEvent(new L.ZoomCenter(12, L.LatLng([50.5, 30.5])));
+history.performActionWithoutTriggeringEvent(new L.ZoomCenter(12, L.LatLng([50.5, 30.5])));
 ```
 
 Events
