@@ -7,7 +7,7 @@ By default, it is a simple pair of buttons -- back and forward. However, it can 
 
 Demo
 --
-Still need to setup the github pages for this repo, but for now, see the two samples in `samples/`
+[View sample here.](http://cscott530.github.io/leaflet-history/)
 
 Installation
 --
