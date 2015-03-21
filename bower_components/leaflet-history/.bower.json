@@ -1,0 +1,29 @@
+{
+  "name": "leaflet-history",
+  "title": "Leaflet History",
+  "main": [
+    "dist/*"
+  ],
+  "ignore": [
+    "samples/",
+    "bower_components"
+  ],
+  "dependencies": {
+    "leaflet-dist": ">=0.7.0",
+    "font-awesome": ">=4.0.3"
+  },
+  "devDependencies": {
+    "jquery": "1.10.2"
+  },
+  "homepage": "https://github.com/cscott530/leaflet-history",
+  "_release": "5136c9dce4",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "5136c9dce47931be0e1697f100aa477f9e9f6282"
+  },
+  "_source": "git://github.com/cscott530/leaflet-history.git",
+  "_target": "*",
+  "_originalSource": "leaflet-history",
+  "_direct": true
+}
