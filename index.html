@@ -42,18 +42,20 @@
 		<div id="map-basic" class="standard-map">
 		</div>
 		<pre>
-      var map = L.map('map-basic').setView([51.505, -0.09], 13);
-      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
-      var history = new L.HistoryControl({
-          maxMovesToSave: 3
-      }).addTo(map);			
+new L.HistoryControl().addTo(map);
 		</pre>
 		
-		
+		<h3>With Custom Graphics, text on buttons</h3>
 		<div id="map-advanced" class="standard-map">
 		</div>
+		<pre>
+new L.HistoryControl({
+  backImage: 'fa fa-chevron-left',
+  forwardImage: 'fa fa-chevron-right',
+  backText: 'Previous',
+  forwardText: 'Next'
+}).addTo(map2);
+		</pre>
         
 
         <footer>
@@ -68,8 +70,17 @@
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
-      var history = new L.HistoryControl({
-          maxMovesToSave: 3
-      }).addTo(map);
+      var history = new L.HistoryControl().addTo(map);
+
+      var map2 = L.map('map-advanced').setView([51.505, -0.09], 13);
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map2);
+      var history2 = new L.HistoryControl({
+		  backImage: 'fa fa-chevron-left',
+		  forwardImage: 'fa fa-chevron-right',
+		  backText: 'Previous',
+		  forwardText: 'Next'
+      }).addTo(map2);
   </script>
 </html>
