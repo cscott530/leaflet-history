@@ -5,8 +5,8 @@
     "main" : ["dist/*"],
     "ignore" : [ "samples/", "bower_components"],
     "dependencies": {
-        "leaflet-dist": "~0.7.0",
-        "font-awesome": "~4.0.3"
+        "leaflet-dist": ">=0.7.0",
+        "font-awesome": ">=4.0.3"
     },
     "devDependencies" : {
         "jquery": "1.10.2"
