@@ -37,12 +37,10 @@
             map.off('movestart');
         },
         performActionWithoutTriggeringEvent: function(action) {
-            var ignoring = this._state.ignoringEvents;
             this._state.ignoringEvents = true;
             if(typeof (action) === 'function') {
                 action();
             }
-            this._state.ignoringEvents = ignoring;
         },
         moveWithoutTriggeringEvent: function(zoomCenter) {
             var _this = this;
@@ -187,6 +185,8 @@
                         _this._state.future.items = [];
                         _this._push(_this._state.history, current);
                     }
+                } else {
+                    _this._state.ignoringEvents = false;
                 }
 
                 _this._updateDisabled();
