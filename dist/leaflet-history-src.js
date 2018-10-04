@@ -37,12 +37,10 @@
             map.off('movestart');
         },
         performActionWithoutTriggeringEvent: function(action) {
-            var ignoring = this._state.ignoringEvents;
             this._state.ignoringEvents = true;
-            if($.isFunction(action)) {
+            if(typeof (action) === 'function') {
                 action();
             }
-            this._state.ignoringEvents = ignoring;
         },
         moveWithoutTriggeringEvent: function(zoomCenter) {
             var _this = this;
@@ -126,18 +124,17 @@
             }
         },
         _setButtonDisabled: function(button, condition) {
-            var $button = $(button);
             var className = 'leaflet-disabled';
             if(condition) {
-                $button.addClass(className);
+                L.DomUtil.addClass(button, className);
             }
             else {
-                $button.removeClass(className);
+                L.DomUtil.removeClass(button, className);
             }
         },
         _pop: function(stack) {
             stack = stack.items;
-            if($.isArray(stack) && stack.length > 0) {
+            if(L.Util.isArray(stack) && stack.length > 0) {
                 return stack.splice(stack.length - 1, 1)[0];
             }
             return undefined;
@@ -145,7 +142,7 @@
         _push: function(stack, value) {
             var maxLength = this._state.maxMovesToSave;
             stack = stack.items;
-            if($.isArray(stack)) {
+            if(L.Util.isArray(stack)) {
                 stack.push(value);
                 if(maxLength > 0 && stack.length > maxLength) {
                     stack.splice(0, 1);
@@ -162,7 +159,7 @@
         },
         _popStackAndUseLocation : function(stackToPop, stackToPushCurrent) {
             //check if we can pop
-            if($.isArray(stackToPop.items) && stackToPop.items.length > 0) {
+            if(L.Util.isArray(stackToPop.items) && stackToPop.items.length > 0) {
                 var current = this._buildZoomCenterObjectFromCurrent(this._map);
                 //get most recent
                 var previous =  this._pop(stackToPop);
@@ -188,6 +185,8 @@
                         _this._state.future.items = [];
                         _this._push(_this._state.history, current);
                     }
+                } else {
+                    _this._state.ignoringEvents = false;
                 }
 
                 _this._updateDisabled();
