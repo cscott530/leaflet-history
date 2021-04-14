@@ -1,3 +1,5 @@
+_**Important**_: This repository has not been updated in quite a long time. I haven't worked on any Leaflet projects in so long, and I have no idea if it even works in latest versions. There are some forks that are probably more up-to-date. Please check those out, instead!
+
 Leaflet-History Control
 ==
 
